@@ -133,7 +133,7 @@ Backend-Bank
 }
 
 async function sendTransactionEmail(userEmail, name, amount, toAccount) {
-  const subject = `Transaction Successful - INR ${amount}`;
+  const subject = `Transaction Successful - ${amount}`;
 
   const text = `Dear ${name},
 
@@ -141,7 +141,7 @@ Your transaction has been successfully completed.
 
 Transaction Details:
 
-• Amount: INR ${amount}
+• Amount: ${amount}
 • Transferred To Account: ${toAccount}
 
 If you did not authorize this transaction, please contact our support team immediately.
@@ -185,7 +185,7 @@ Backend-Bank
           <table width="100%" cellpadding="8" cellspacing="0" style="margin:20px 0; background:#f9fafb; border-radius:6px;">
             <tr>
               <td><strong>Amount:</strong></td>
-              <td>INR ${amount}</td>
+              <td>${amount}</td>
             </tr>
             <tr>
               <td><strong>Transferred To Account:</strong></td>
