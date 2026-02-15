@@ -2,6 +2,7 @@ const ledgerModel = require("../models/ledger.model");
 const transactionModel = require("../models/transaction.model");
 const accountModel = require("../models/account.model");
 const emailService = require("../services/email.service");
+const mongoose = require("mongoose");
 
 /**
  * - Create a new transaction
@@ -72,4 +73,69 @@ async function createTransaction(req, res) {
         "Both sender and reciver account must be ACTIVE to process transaction",
     });
   }
+  /**
+   * 4. Derived sender balance from ledger
+   */
+  const balance = await fromUserAccount.getBalance();
+  if (balance < ammount) {
+    return res.status(400).json({
+      message: `Insufficient Fund Availble Balance is ${balance}. requested ammount is ${ammount}`,
+    });
+  }
+  /**
+   * 5. Create transaction
+   */
+
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  const transaction = await transactionModel.create(
+    {
+      fromAccount,
+      toAccount,
+      ammount,
+      idempotencyKey,
+      status: "PENDING",
+    },
+    { session },
+  );
+  const debitLedgerEntry = await ledgerModel.create(
+    {
+      account: fromAccount,
+      ammount: ammount,
+      transaction: transaction._id,
+      type: "DEBIT",
+    },
+    { session },
+  );
+  const creditLedgerEntry = await ledgerModel.create(
+    {
+      account: toAccount,
+      ammount: ammount,
+      transaction: transaction._id,
+      type: "CREDIT",
+    },
+    { session },
+  );
+  transaction.status = "SUCCESS";
+  await transaction.save({ session });
+  await session.commitTransaction();
+  session.endSession();
+
+  /**
+   * 10. Email notification
+   */
+  await emailService.sendTransactionEmail(
+    req.user.email,
+    req.user.name,
+    ammount,
+    toAccount,
+  );
+  res.status(201).json({
+    message: "Transaction completed successfully",
+    transaction: transaction,
+  });
 }
+
+module.exports = {
+  createTransaction,
+};

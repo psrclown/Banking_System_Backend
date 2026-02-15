@@ -132,4 +132,91 @@ Backend-Bank
   await sendEmail(userEmail, subject, text, html);
 }
 
-module.exports = { sendRegistrationEmail };
+async function sendTransactionEmail(userEmail, name, amount, toAccount) {
+  const subject = `Transaction Successful - INR ${amount}`;
+
+  const text = `Dear ${name},
+
+Your transaction has been successfully completed.
+
+Transaction Details:
+
+• Amount: INR ${amount}
+• Transferred To Account: ${toAccount}
+
+If you did not authorize this transaction, please contact our support team immediately.
+
+For security reasons, never share your OTP or password with anyone.
+
+Thank you for banking with Backend-Bank.
+
+Regards,
+Backend-Bank
+`;
+
+  const html = `
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Transaction Alert</title>
+  </head>
+  <body style="margin:0; padding:0; font-family: Arial, sans-serif; background-color:#f4f6f9;">
+    
+    <table align="center" width="600" cellpadding="0" cellspacing="0" style="background:#ffffff; margin-top:40px; border-radius:8px; overflow:hidden; box-shadow:0 4px 10px rgba(0,0,0,0.05);">
+      
+      <!-- Header -->
+      <tr>
+        <td style="background:#1e3a8a; padding:20px; text-align:center; color:#ffffff;">
+          <h2 style="margin:0;">Backend-Bank</h2>
+          <p style="margin:5px 0 0 0; font-size:14px;">Transaction Alert</p>
+        </td>
+      </tr>
+
+      <!-- Body -->
+      <tr>
+        <td style="padding:30px; color:#333333;">
+          <h3 style="margin-top:0;">Hello ${name},</h3>
+          
+          <p>
+            Your transaction has been successfully completed.
+          </p>
+
+          <table width="100%" cellpadding="8" cellspacing="0" style="margin:20px 0; background:#f9fafb; border-radius:6px;">
+            <tr>
+              <td><strong>Amount:</strong></td>
+              <td>INR ${amount}</td>
+            </tr>
+            <tr>
+              <td><strong>Transferred To Account:</strong></td>
+              <td>${toAccount}</td>
+            </tr>
+          </table>
+
+          <p style="background:#fff3cd; padding:10px; border-radius:5px; font-size:14px;">
+            ⚠️ If you did not authorize this transaction, please contact support immediately.
+          </p>
+
+          <p style="margin-top:30px;">
+            Regards,<br>
+            <strong>Backend-Bank</strong>
+          </p>
+        </td>
+      </tr>
+
+      <!-- Footer -->
+      <tr>
+        <td style="background:#f1f5f9; padding:15px; text-align:center; font-size:12px; color:#666;">
+          © ${new Date().getFullYear()} Backend-Bank. All rights reserved.
+        </td>
+      </tr>
+
+    </table>
+  </body>
+  </html>
+  `;
+
+  await sendEmail(userEmail, subject, text, html);
+}
+
+module.exports = { sendRegistrationEmail, sendTransactionEmail };
