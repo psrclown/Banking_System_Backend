@@ -18,8 +18,8 @@ router.post(
 router.post(
   "/system/initial-fund",
   authMiddleware.authMiddleware,
-  transactionController.createInitialFundsTransaction,
   authMiddleware.authSystemMiddleware,
+  transactionController.createInitialFundsTransaction,
 );
 
 module.exports = router;
