@@ -136,6 +136,10 @@ async function createTransaction(req, res) {
   });
 }
 
+async function createInitialFundsTransaction(req, res) {
+  const { toAccount, ammount, idempotencyKey } = req.body;
+}
+
 module.exports = {
   createTransaction,
 };
